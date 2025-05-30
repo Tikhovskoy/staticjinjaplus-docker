@@ -24,34 +24,30 @@ staticjinjaplus-docker/
 
 ---
 
-##  Как собрать Docker-образ
+## Как собрать Docker-образ
 
-Чтобы собрать образ с нужной версией StaticJinjaPlus, укажите тег в аргументе `SJP_VERSION`.
-
----
+Чтобы собрать образ с нужной версией StaticJinjaPlus, укажите тег или ветку в аргументе `SJP_VERSION`.
 
 ### **Сборка стабильной версии (Python Slim):**
 
 ```bash
 docker build -f Dockerfile.slim --build-arg SJP_VERSION=0.1.1 -t static-jinja-plus:0.1.1-slim .
-```
-
-### **Сборка develop-версии (из ветки main, Python Slim):**
+````
 
 ```bash
-docker build -f Dockerfile.develop-slim -t static-jinja-plus:develop-slim .
+docker build -f Dockerfile.slim --build-arg SJP_VERSION=main -t static-jinja-plus:develop-slim .
 ```
 
-### **Сборка стабильной версии на базе Ubuntu (через python:3.12):**
+### **Сборка стабильной версии на базе Ubuntu:**
 
 ```bash
 docker build -f Dockerfile --build-arg SJP_VERSION=0.1.1 -t static-jinja-plus:0.1.1 .
 ```
 
-### **Сборка develop-версии на базе Ubuntu (через python:3.12):**
+### **Сборка develop-версии на базе Ubuntu (ветка main):**
 
 ```bash
-docker build -f Dockerfile.develop -t static-jinja-plus:develop .
+docker build -f Dockerfile --build-arg SJP_VERSION=main -t static-jinja-plus:develop .
 ```
 
 ---

@@ -1,21 +1,25 @@
 FROM python:3.12
 
-ARG SJP_VERSION=0.1.1
+ARG SJP_VERSION=main
+
 WORKDIR /app
 
 RUN apt-get update && \
     apt-get install -y curl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-ADD https://github.com/Tikhovskoy/StaticJinjaPlus/archive/refs/tags/v${SJP_VERSION}.tar.gz /app/sjp.tar.gz
-
-RUN tar -xzf sjp.tar.gz && \
+RUN if echo "$SJP_VERSION" | grep -Eq '^[0-9]'; then \
+      URL="https://github.com/Tikhovskoy/StaticJinjaPlus/archive/refs/tags/v${SJP_VERSION}.tar.gz"; \
+    else \
+      URL="https://github.com/Tikhovskoy/StaticJinjaPlus/archive/refs/heads/${SJP_VERSION}.tar.gz"; \
+    fi && \
+    curl -L "$URL" -o /app/sjp.tar.gz && \
+    tar -xzf sjp.tar.gz && \
     mv StaticJinjaPlus-* StaticJinjaPlus && \
     rm sjp.tar.gz
 
 WORKDIR /app/StaticJinjaPlus
-
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 ENTRYPOINT ["python", "main.py"]

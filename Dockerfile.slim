@@ -1,26 +1,22 @@
 FROM python:3.12-slim
 
+ARG SJP_VERSION=main
+ARG ZIP_CHECKSUM
 ARG GIT_HASH=unknown
+
+ENV SJP_VERSION=${SJP_VERSION}
 ENV GIT_HASH=${GIT_HASH}
 
-ARG SJP_VERSION=main
+WORKDIR /tmp
+
+RUN apt update && apt install -y wget unzip && rm -rf /var/lib/apt/lists/*
+
+ADD --checksum=${ZIP_CHECKSUM} https://github.com/Tikhovskoy/StaticJinjaPlus/archive/${SJP_VERSION}.zip /tmp/source.zip
+
+RUN unzip /tmp/source.zip && \
+    cd StaticJinjaPlus-* && \
+    pip install . && \
+    cd .. && rm -rf /tmp/*
+
 WORKDIR /app
-
-RUN apt-get update && \
-    apt-get install -y curl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN if echo "$SJP_VERSION" | grep -Eq '^[0-9]'; then \
-      URL="https://github.com/Tikhovskoy/StaticJinjaPlus/archive/refs/tags/v${SJP_VERSION}.tar.gz"; \
-    else \
-      URL="https://github.com/Tikhovskoy/StaticJinjaPlus/archive/refs/heads/${SJP_VERSION}.tar.gz"; \
-    fi && \
-    curl -L "$URL" -o /app/sjp.tar.gz && \
-    tar -xzf sjp.tar.gz && \
-    mv /app/StaticJinjaPlus-* /app/StaticJinjaPlus && \
-    rm sjp.tar.gz
-
-WORKDIR /app/StaticJinjaPlus
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["staticjinja"]
